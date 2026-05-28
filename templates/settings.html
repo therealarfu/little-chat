@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block title %}
+    Profile Settings
+{% endblock %}
+{% block content %}
+    <h1>Profile Settings</h1>
+    <p>This is the profile settings page.</p>
+    <h2>Account settings</h2>
+    <form action="/settings" method="post">
+        <input type="hidden" name="action" value="change_username">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" value="{{ username }}" required><br><br>
+        <input type="submit" value="Change username">
+    </form>
+    <form action="/settings" method="post">
+        <input type="hidden" name="action" value="change_password">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+        <label for="newpass">New password:</label>
+        <input type="password" id="newpass" name="newpass" required><br><br>
+        <input type="submit" value="Change password">
+    </form>
+    <h2>Personal Information</h2>
+    <form action="/settings" method="post">
+        <input type="hidden" name="action" value="change_info">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="{{ name }}" required><br><br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ email }}" required><br><br>
+        <label for="phone">Phone:</label>
+        <input type="text" id="phone" name="phone" value="{{ phone }}" required><br><br>
+        <input type="submit" value="Update">
+    </form>
+{% endblock %}
