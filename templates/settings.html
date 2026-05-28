@@ -6,14 +6,15 @@
     <h1>Profile Settings</h1>
     <p>This is the profile settings page.</p>
     <h2>Account settings</h2>
-    <form action="/settings" method="post">
-        <input type="hidden" name="action" value="change_username">
+    <form action="/settings/change_username" method="POST">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" value="{{ username }}" required><br><br>
         <input type="submit" value="Change username">
     </form>
-    <form action="/settings" method="post">
-        <input type="hidden" name="action" value="change_password">
+    <form action="/settings/remove_account" method="POST">
+        <input type="submit" value="Delete account">
+    </form>
+    <form action="/settings/change_password" method="POST">
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required><br><br>
         <label for="newpass">New password:</label>
@@ -21,8 +22,7 @@
         <input type="submit" value="Change password">
     </form>
     <h2>Personal Information</h2>
-    <form action="/settings" method="post">
-        <input type="hidden" name="action" value="change_info">
+    <form action="/settings/change_info" method="POST">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" value="{{ name }}" required><br><br>
         <label for="email">Email:</label>

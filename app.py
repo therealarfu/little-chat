@@ -2,7 +2,7 @@ import sqlite3
 import bcrypt
 import re
 from helpers import login_required, raise_err
-from flask import Flask, session, redirect, request, render_template, g
+from flask import Flask, session, redirect, request, render_template, g, url_for
 from flask_session import Session
 
 app = Flask(__name__)
@@ -121,46 +121,7 @@ def profiles():
 @login_required
 def settings():
     db = get_db()
-    if request.method == "POST":
-        if request.form.get("action") == "change_username":
-            new_username = request.form.get("username")
-            exists = db.execute("SELECT id FROM users WHERE username = ?", (new_username, )).fetchone()
-
-            if exists is not None:
-                return raise_err("This username is already taken")
-
-            db.execute("UPDATE users SET username = ? WHERE id = ?", (new_username, session["user_id"]))
-            db.commit()
-
-        elif request.form.get("action") == "change_password":
-            row = db.execute("SELECT hash FROM users WHERE id = ?", (session["user_id"], )).fetchone()
-            hashed = row["hash"]
-
-            input_password = request.form.get("password")
-
-            if not bcrypt.checkpw(input_password.encode(), hashed):
-                return raise_err("The password is wrong.")
-
-            new_pass = request.form.get("newpass")
-            new_hash = bcrypt.hashpw(new_pass.encode(), bcrypt.gensalt())
-
-            db.execute("UPDATE users SET hash = ? WHERE id = ?", (new_hash, session["user_id"]))
-            db.commit()
-
-        elif request.form.get("action") == "change_info":
-            name = request.form.get("name")
-            email = request.form.get("email")
-
-            email_verifier = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-
-            if not re.match(email_verifier, email):
-                return raise_err("Invalid email input")
-
-            phone = request.form.get("phone")
-
-            db.execute("UPDATE info SET name = ?, email = ?, phone = ? WHERE user_id = ?", (name, email, phone, session["user_id"]))
-            db.commit()
-
+    
     row_users = db.execute("SELECT username FROM users WHERE id = ?", (session["user_id"],)).fetchone()
     row_info = db.execute("SELECT name, email, phone FROM info WHERE user_id = ?", (session["user_id"],)).fetchone()
 
@@ -171,6 +132,67 @@ def settings():
 
     return render_template("settings.html", username=username, name=name, email=email, phone=phone)
 
+@app.route("/settings/change_username", methods=["POST"])
+@login_required
+def change_username():
+    db = get_db()
+    new_username = request.form.get("username")
+    exists = db.execute("SELECT id FROM users WHERE username = ?", (new_username, )).fetchone()
+
+    if exists is not None:
+        return raise_err("This username is already taken")
+
+    db.execute("UPDATE users SET username = ? WHERE id = ?", (new_username, session["user_id"]))
+    db.commit()
+    return redirect(url_for("settings"))
+    
+
+@app.route("/settings/change_password", methods=["POST"])
+@login_required
+def change_password():
+    db = get_db()
+    row = db.execute("SELECT hash FROM users WHERE id = ?", (session["user_id"], )).fetchone()
+    hashed = row["hash"]
+
+    input_password = request.form.get("password")
+
+    if not bcrypt.checkpw(input_password.encode(), hashed):
+        return raise_err("The password is wrong.")
+
+    new_pass = request.form.get("newpass")
+    new_hash = bcrypt.hashpw(new_pass.encode(), bcrypt.gensalt())
+
+    db.execute("UPDATE users SET hash = ? WHERE id = ?", (new_hash, session["user_id"]))
+    db.commit()
+    return redirect(url_for("settings"))
+
+@app.route("/settings/change_info", methods=["POST"])
+@login_required
+def change_info():
+    db = get_db()
+
+    name = request.form.get("name")
+    email = request.form.get("email")
+
+    email_verifier = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+
+    if not re.match(email_verifier, email):
+        return raise_err("Invalid email input")
+
+    phone = request.form.get("phone")
+
+    db.execute("UPDATE info SET name = ?, email = ?, phone = ? WHERE user_id = ?", (name, email, phone, session["user_id"]))
+    db.commit()
+    return redirect(url_for("settings"))
+
+@app.route("/settings/remove_account", methods=["POST"])
+@login_required
+def remove_account():
+    db = get_db()
+
+    db.execute("DELETE FROM users WHERE id = ?", (session["user_id"], ))
+    db.commit()
+    return redirect(url_for("logout"))
 
 @app.route("/profile/<username>", methods=["GET", "POST"])
 @login_required
