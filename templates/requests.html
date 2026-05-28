@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block title %}
+    Friend requests
+{% endblock %}
+{% block content %}
+    <h1>Friend Requests</h1>
+    <table>
+    	<thead>
+    		<tr>
+    			<th>User</th>
+    			<th>Date</th>
+    			<th>Accept</th>
+    			<th>Decline</th>
+    		</tr>
+    	</thead>
+    	<tbody>
+    		{% for request in requests %}
+    		<tr>
+    			<td>{{ request["sender_username"] }}</td>
+    			<td>{{ request["created_at"] }}</td>
+    			<td>
+    				<form action="/requests/accept_request/{{ request['id'] }}" method="POST">
+    					<input type="submit" value="Accept">
+    				</form>
+    			</td>
+    			<td>
+    				<form action="/requests/decline_request/{{ request['id'] }}" method="POST">
+    					<input type="submit" value="Decline">
+    				</form>
+    			</td>
+    		</tr>
+    		{% endfor %}
+    	</tbody>
+    </table>
+{% endblock %}

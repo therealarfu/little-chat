@@ -132,6 +132,7 @@ def settings():
 
     return render_template("settings.html", username=username, name=name, email=email, phone=phone)
 
+
 @app.route("/settings/change_username", methods=["POST"])
 @login_required
 def change_username():
@@ -166,6 +167,7 @@ def change_password():
     db.commit()
     return redirect(url_for("settings"))
 
+
 @app.route("/settings/change_info", methods=["POST"])
 @login_required
 def change_info():
@@ -185,6 +187,7 @@ def change_info():
     db.commit()
     return redirect(url_for("settings"))
 
+
 @app.route("/settings/remove_account", methods=["POST"])
 @login_required
 def remove_account():
@@ -193,6 +196,7 @@ def remove_account():
     db.execute("DELETE FROM users WHERE id = ?", (session["user_id"], ))
     db.commit()
     return redirect(url_for("logout"))
+
 
 @app.route("/profile/<username>", methods=["GET", "POST"])
 @login_required
@@ -208,6 +212,134 @@ def profile(username):
     email = row_info["email"]
     phone = row_info["phone"]
     return render_template("profile.html", username=username, name=name, email=email, phone=phone)
+
+
+@app.route("/send_request/<username>", methods=["POST"])
+@login_required
+def send_request(username):
+    db = get_db()
+
+    row = db.execute("SELECT id FROM users WHERE username = ?", (username, )).fetchone()
+    if not row:
+        return raise_err("This user does not exist")
+
+    receiver_id = row["id"]
+    sender_id = session["user_id"]
+
+    exists_friendship = db.execute("SELECT id FROM friends WHERE user_id = ? AND friend_id = ?", (sender_id, receiver_id)).fetchone()
+    if exists_friendship:
+        return raise_err(f"You and this user are already friends")
+
+    exists_pending = db.execute("SELECT id FROM friends_requests WHERE sender_id = ? AND receiver_id = ? AND status = 'pending'", (sender_id, receiver_id)).fetchone()
+    if exists_pending:
+        return raise_err(f"You already sent a request to this user.")
+
+    db.execute("INSERT INTO friends_requests (sender_id, receiver_id, status) VALUES (?, ?, 'pending')", (sender_id, receiver_id))
+    db.commit()
+    return redirect(url_for("profile", username=username))
+
+
+@app.route("/requests", methods=["GET", "POST"])
+@login_required
+def friends_requests():
+    db = get_db()
+
+    requests = db.execute("""
+        SELECT friends_requests.*, users.username AS sender_username
+        FROM friends_requests
+        JOIN users ON friends_requests.sender_id = users.id
+        WHERE receiver_id = ?
+    """, (session["user_id"],)).fetchall()
+
+    requests.sort(key=lambda request: request["created_at"], reverse=True)
+
+    return render_template("requests.html", requests=requests)
+
+
+@app.route("/requests/accept_request/<id>", methods=["POST"])
+@login_required
+def accept_request(id):
+    db = get_db()
+
+    sent_request = db.execute("SELECT * FROM friends_requests WHERE id = ?", (id, )).fetchone()
+    if not sent_request:
+        return raise_err("Request not found.")
+
+    friend_exists = db.execute("SELECT id FROM friends WHERE user_id = ? AND friend_id = ?", (sent_request["sender_id"], sent_request["receiver_id"])).fetchone()
+    if friend_exists:
+        return raise_err("You and this user are already friends.")
+
+    db.execute("UPDATE friends_requests SET status='accepted' WHERE id = ?", (id, ))
+    db.execute("INSERT INTO friends (user_id, friend_id) VALUES (?, ?)", (sent_request["sender_id"], sent_request["receiver_id"]))
+    db.execute("INSERT INTO friends (user_id, friend_id) VALUES (?, ?)", (sent_request["receiver_id"], sent_request["sender_id"]))
+    db.commit()
+
+    return redirect(url_for("friends_requests"))
+
+
+@app.route("/requests/decline_request/<id>", methods=["POST"])
+@login_required
+def decline_request(id):
+    db = get_db()
+
+    sent_request = db.execute("SELECT * FROM friends_requests WHERE id = ?", (id, )).fetchone()
+    if not sent_request:
+        return raise_err("Request not found.")
+
+    friend_exists = db.execute("SELECT id FROM friends WHERE user_id = ? AND friend_id = ?", (sent_request["sender_id"], sent_request["receiver_id"])).fetchone()
+    if friend_exists:
+        return raise_err("You and this user are already friends.")
+
+    db.execute("UPDATE friends_requests SET status='rejected' WHERE id = ?", (id, ))
+    db.commit()
+
+    return redirect(url_for("friends_requests"))  
+
+
+@app.route("/requests_sent", methods=["GET", "POST"])
+@login_required
+def requests_sent():
+    db = get_db()
+
+    requests = db.execute("""SELECT friends_requests.*, users.username AS receiver_username FROM friends_requests
+        JOIN users ON friends_requests.receiver_id = users.id WHERE sender_id = ?""", (session["user_id"], )).fetchall()
+
+    requests.sort(key=lambda request: request["created_at"], reverse=True)
+
+    return render_template("sent_requests.html", requests=requests)
+
+
+@app.route("/friends", methods=["GET", "POST"])
+@login_required
+def friends():
+    db = get_db()
+
+    friends = db.execute("""SELECT friends.*, users.username AS friend_username
+        FROM friends JOIN users ON friends.friend_id = users.id
+        WHERE user_id = ?""", (session["user_id"], )).fetchall()
+
+    return render_template("friends.html", friends=friends)
+
+
+@app.route("/friends/remove_friend/<friend_username>", methods=["GET", "POST"])
+@login_required
+def remove_friend(friend_username):
+    db = get_db()
+
+    friend = db.execute("SELECT id FROM users WHERE username = ?", (friend_username, )).fetchone()
+    if not friend:
+        return raise_err("This user does not exist")
+    friend_id = friend["id"]
+
+    exists_friendship = db.execute("SELECT id FROM friends WHERE user_id = ? AND friend_id = ?", (session["user_id"], friend_id)).fetchone()
+    if not exists_friendship:
+        return raise_err("This friendship does not exist")
+
+    db.execute("DELETE FROM friends WHERE user_id = ? AND friend_id = ?", (session["user_id"], friend_id))
+    db.execute("DELETE FROM friends WHERE user_id = ? AND friend_id = ?", (friend_id, session["user_id"]))
+    db.commit()
+
+    return redirect(url_for("friends"))  
 
 if __name__ == "__main__":
     app.run(debug=True)

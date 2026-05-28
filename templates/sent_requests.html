@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block title %}
+    Requests sents
+{% endblock %}
+{% block content %}
+    <h1>Requests sents</h1>
+    <table>
+    	<thead>
+    		<tr>
+    			<th>User</th>
+    			<th>Date</th>
+                <th>Status</th>
+    		</tr>
+    	</thead>
+    	<tbody>
+    		{% for request in requests %}
+    		<tr>
+    			<td>{{ request["receiver_username"] }}</td>
+    			<td>{{ request["created_at"] }}</td>
+                <td>{{ request["status"] }}</td>
+    		</tr>
+    		{% endfor %}
+    	</tbody>
+    </table>
+{% endblock %}

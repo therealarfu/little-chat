@@ -1,1 +1,29 @@
 {% extends "layout.html" %}
+{% block title %}
+    Friends
+{% endblock %}
+{% block content %}
+    <h1>Friends</h1>
+    <ul>
+	    {% for friend in friends %}
+	    	<li>{{ friend["friend_username"] }}</li>
+	    	<ul>
+	    		<li>
+	    			<form action="/profile/{{ friend['friend_username'] }}" method="POST">
+	    				<input type="submit" value="See profile">
+	    			</form>
+	    		</li>
+	    		<li>
+				    <form action="" method="POST">
+						<input type="submit" value="Chat">
+					</form>
+	    		</li>
+	    		<li>
+	    			<form action="/friends/remove_friend/{{ friend['friend_username'] }}" method="POST">
+						<input type="submit" value="Remove friend">
+					</form>
+	    		</li>
+	    	</ul>
+	    {% endfor %} 	
+    </ul>
+{% endblock %}

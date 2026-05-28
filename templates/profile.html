@@ -13,8 +13,8 @@
         <li>Phonenumber: {{ phone }}</li>
     </ul>
 
-    <form action="/profile" method="post">
-        <input type="hidden" name="action" value="{{ username }}">
+    <form action="/send_request/{{ username }}" method="POST">
         <input type="submit" value="Add friend">
     </form>
+    
 {% endblock %}
