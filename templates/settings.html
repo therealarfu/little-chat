@@ -29,6 +29,8 @@
         <input type="email" id="email" name="email" value="{{ email }}" required><br><br>
         <label for="phone">Phone:</label>
         <input type="text" id="phone" name="phone" value="{{ phone }}" required><br><br>
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" rows="4" cols="50">{{ description }}</textarea><br><br>
         <input type="submit" value="Update">
     </form>
 {% endblock %}

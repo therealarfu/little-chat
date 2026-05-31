@@ -43,12 +43,13 @@ def index():
     if request.method == "GET":
         db = get_db()
         row = db.execute("SELECT username FROM users WHERE id = ?", (session["user_id"],)).fetchone()
-        row_info = db.execute("SELECT name, email, phone FROM info WHERE user_id = ?", (session["user_id"], )).fetchone()
+        row_info = db.execute("SELECT name, email, phone, desc FROM info WHERE user_id = ?", (session["user_id"], )).fetchone()
 
         name = row_info["name"]
         email = row_info["email"]
         phone = row_info["phone"]
-        return render_template("index.html", username=row["username"], name=name, email=email, phone=phone)
+        description = row_info["desc"]
+        return render_template("index.html", username=row["username"], name=name, email=email, phone=phone, description=description)
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -123,14 +124,15 @@ def settings():
     db = get_db()
     
     row_users = db.execute("SELECT username FROM users WHERE id = ?", (session["user_id"],)).fetchone()
-    row_info = db.execute("SELECT name, email, phone FROM info WHERE user_id = ?", (session["user_id"],)).fetchone()
+    row_info = db.execute("SELECT name, email, phone, desc FROM info WHERE user_id = ?", (session["user_id"],)).fetchone()
 
     username = row_users["username"]
     name = row_info["name"]
     email = row_info["email"]
     phone = row_info["phone"]
+    description = row_info["desc"]
 
-    return render_template("settings.html", username=username, name=name, email=email, phone=phone)
+    return render_template("settings.html", username=username, name=name, email=email, phone=phone, description=description)
 
 
 @app.route("/settings/change_username", methods=["POST"])
@@ -182,8 +184,9 @@ def change_info():
         return raise_err("Invalid email input")
 
     phone = request.form.get("phone")
-
-    db.execute("UPDATE info SET name = ?, email = ?, phone = ? WHERE user_id = ?", (name, email, phone, session["user_id"]))
+    description = request.form.get("description")
+    
+    db.execute("UPDATE info SET name = ?, email = ?, phone = ?, desc = ? WHERE user_id = ?", (name, email, phone, description, session["user_id"]))
     db.commit()
     return redirect(url_for("settings"))
 
@@ -211,7 +214,8 @@ def profile(username):
     name = row_info["name"]
     email = row_info["email"]
     phone = row_info["phone"]
-    return render_template("profile.html", username=username, name=name, email=email, phone=phone)
+    desc = row_info["desc"]
+    return render_template("profile.html", username=username, name=name, email=email, phone=phone, desc=desc)
 
 
 @app.route("/send_request/<username>", methods=["POST"])
