@@ -6,6 +6,16 @@
     <h1>Profile Settings</h1>
     <p>This is the profile settings page.</p>
     <h2>Account settings</h2>
+    <form action="/settings/change_image" method="POST" enctype="multipart/form-data">
+        <label for="image">Profile Image:</label>
+        {% if image %}
+            <img style="width: 200px; height: 200px;" src="{{ url_for('static', filename='uploads/' + image) }}" alt="Profile Image">
+        {% else %}
+            <img style="width: 200px; height: 200px;" src="{{ url_for('static', filename='uploads/default.png') }}" alt="Profile Image">
+        {% endif %}
+        <input type="file" name="image" accept="image/*">
+        <input type="submit" value="Upload">
+    </form>
     <form action="/settings/change_username" method="POST">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" value="{{ username }}" required><br><br>

@@ -4,6 +4,11 @@
 {% endblock %}
 {% block content %}
     <h1>Profile</h1>
+    {% if image %}
+        <img style="width: 200px; height: 200px;" src="{{ url_for('static', filename='uploads/' + image) }}" alt="Profile Image">
+    {% else %}
+        <img style="width: 200px; height: 200px;" src="{{ url_for('static', filename='uploads/default.png') }}" alt="Profile Image">
+    {% endif %}
     <h2>Username: {{ username }}</h2>
     <h1>Personal Information</h1>
     <h2>Name: {{ name }}</h2>

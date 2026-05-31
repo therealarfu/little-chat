@@ -1,9 +1,12 @@
 import sqlite3
 import bcrypt
 import re
+import os
+
 from helpers import login_required, raise_err
 from flask import Flask, session, redirect, request, render_template, g, url_for
 from flask_session import Session
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
@@ -11,6 +14,12 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
+UPLOAD_FOLDER = "static/uploads"
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def get_db():
     if 'db' not in g:
@@ -43,13 +52,15 @@ def index():
     if request.method == "GET":
         db = get_db()
         row = db.execute("SELECT username FROM users WHERE id = ?", (session["user_id"],)).fetchone()
-        row_info = db.execute("SELECT name, email, phone, desc FROM info WHERE user_id = ?", (session["user_id"], )).fetchone()
+        row_info = db.execute("SELECT name, email, phone, desc, image FROM info WHERE user_id = ?", (session["user_id"], )).fetchone()
 
         name = row_info["name"]
         email = row_info["email"]
         phone = row_info["phone"]
         description = row_info["desc"]
-        return render_template("index.html", username=row["username"], name=name, email=email, phone=phone, description=description)
+        image = row_info["image"]
+
+        return render_template("index.html", username=row["username"], name=name, email=email, phone=phone, image=image,description=description)
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -124,15 +135,16 @@ def settings():
     db = get_db()
     
     row_users = db.execute("SELECT username FROM users WHERE id = ?", (session["user_id"],)).fetchone()
-    row_info = db.execute("SELECT name, email, phone, desc FROM info WHERE user_id = ?", (session["user_id"],)).fetchone()
+    row_info = db.execute("SELECT name, email, phone, desc, image FROM info WHERE user_id = ?", (session["user_id"],)).fetchone()
 
     username = row_users["username"]
     name = row_info["name"]
     email = row_info["email"]
     phone = row_info["phone"]
     description = row_info["desc"]
+    image = row_info["image"]
 
-    return render_template("settings.html", username=username, name=name, email=email, phone=phone, description=description)
+    return render_template("settings.html", username=username, name=name, email=email, phone=phone, description=description, image=image)
 
 
 @app.route("/settings/change_username", methods=["POST"])
@@ -185,11 +197,24 @@ def change_info():
 
     phone = request.form.get("phone")
     description = request.form.get("description")
-    
-    db.execute("UPDATE info SET name = ?, email = ?, phone = ?, desc = ? WHERE user_id = ?", (name, email, phone, description, session["user_id"]))
+    image = request.form.get("image")
+
+    db.execute("UPDATE info SET name = ?, email = ?, phone = ?, desc = ?, image = ? WHERE user_id = ?", (name, email, phone, description, image, session["user_id"]))
     db.commit()
     return redirect(url_for("settings"))
 
+@app.route("/settings/change_image", methods=["POST"])
+@login_required
+def change_image():
+    db = get_db()
+    file = request.files.get('image')
+
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        db.execute("UPDATE info SET image = ? WHERE user_id = ?", (filename, session["user_id"]))
+        db.commit()
+    return redirect(url_for("settings"))
 
 @app.route("/settings/remove_account", methods=["POST"])
 @login_required
@@ -215,7 +240,9 @@ def profile(username):
     email = row_info["email"]
     phone = row_info["phone"]
     desc = row_info["desc"]
-    return render_template("profile.html", username=username, name=name, email=email, phone=phone, desc=desc)
+    image = row_info["image"]
+
+    return render_template("profile.html", username=username, name=name, email=email, phone=phone, desc=desc, image=image)
 
 
 @app.route("/send_request/<username>", methods=["POST"])

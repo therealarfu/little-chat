@@ -8,6 +8,12 @@
 
     <h2>Personal info</h2>
     <ul>
+        {% if image %}
+            <img style="width: 200px; height: 200px;" src="{{ url_for('static', filename='uploads/' + image) }}" alt="Profile Image">
+        {% else %}
+            <img style="width: 200px; height: 200px;" src="{{ url_for('static', filename='uploads/default.png') }}" alt="Profile Image">
+        {% endif %}
+
         <li>Name: {{ name }}</li>
         <li>Email: {{ email }}</li>
         <li>Phonenumber: {{ phone }}</li>
