@@ -1,0 +1,66 @@
+/* ── Profile page (index) ── */
+body.page-profile {
+    background-color: var(--color-navbar); /* escurece o body inteiro */
+}
+
+body.page-profile main {
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 0;
+}
+
+.profile-page {
+    width: 100%;
+    max-width: 900px;    /* centraliza o conteúdo com largura máxima */
+    margin: 0 auto;      /* centraliza horizontalmente */
+}
+
+.profile-banner {
+    width: 100vw;
+    height: 180px;
+    background-color: var(--color-bg);
+    margin-left: calc(-1 * ((100vw - 100%) / 2));
+}
+
+.profile-body {
+    display: flex;
+    gap: 2rem;
+    padding: 0 2rem 2rem;
+}
+
+.profile-sidebar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 180px;
+}
+
+.profile-avatar img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin-top: -60px;
+    object-fit: cover;
+}
+
+.profile-content {
+    flex: 1;
+    padding-top: 1rem;
+    overflow: visible; /* garante que o botão não seja cortado */
+}
+
+.profile-section {
+    margin-bottom: 1.5rem;
+}
+
+.profile-edit-btn {
+    float: right;
+    width: auto !important;      /* força override do input { width: 100% } */
+    padding: 0.5rem 1.25rem;
+    white-space: nowrap;
+    margin: 0;
+}
+
+.profile-username {
+    font-size: 0.9rem;
+}

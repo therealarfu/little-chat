@@ -51,16 +51,21 @@ with app.app_context():
 def index():
     if request.method == "GET":
         db = get_db()
-        row = db.execute("SELECT username FROM users WHERE id = ?", (session["user_id"],)).fetchone()
-        row_info = db.execute("SELECT name, email, phone, desc, image FROM info WHERE user_id = ?", (session["user_id"], )).fetchone()
+        row_info = db.execute("""SELECT users.username, info.name, info.email, info.phone, info.desc, info.image, 
+                              COUNT(friends.id) AS friends_count FROM info
+                               JOIN friends ON info.user_id = friends.user_id 
+                               JOIN users ON info.user_id = users.id
+                               WHERE info.user_id = ?""", (session["user_id"], )).fetchone()
 
+        username = row_info["username"]
         name = row_info["name"]
         email = row_info["email"]
         phone = row_info["phone"]
         description = row_info["desc"]
         image = row_info["image"]
+        friends_count = row_info["friends_count"]
 
-        return render_template("index.html", username=row["username"], name=name, email=email, phone=phone, image=image,description=description)
+        return render_template("index.html", username=username, name=name, email=email, phone=phone, image=image, description=description, friends_count=friends_count)
 
 
 @app.route("/register", methods=["GET", "POST"])

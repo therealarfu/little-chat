@@ -1,31 +1,51 @@
 {% extends "layout.html" %}
 {% block title %}Homepage{% endblock %}
+{% block body_class %}page-profile{% endblock %}
 
 {% block content %}
 <div class="profile-page">
 
-    <section class="profile-header card">
-        <div class="profile-avatar">
-            {% if image %}
-                <img src="{{ url_for('static', filename='uploads/' + image) }}" alt="Profile Image">
-            {% else %}
-                <img src="{{ url_for('static', filename='uploads/default.png') }}" alt="Profile Image">
-            {% endif %}
-        </div>
-        <div class="profile-identity">
-            <h1>{{ username }}</h1>
-            {% if name %}<p class="profile-name">{{ name }}</p>{% endif %}
-            {% if description %}<p class="profile-desc">{{ description }}</p>{% endif %}
-        </div>
-    </section>
+    <div class="profile-banner"></div>
 
-    <section class="profile-info card">
-        <h2>Personal Information</h2>
-        <ul class="info-list">
-            {% if email %}<li><span class="info-label">Email</span><span>{{ email }}</span></li>{% endif %}
-            {% if phone %}<li><span class="info-label">Phone</span><span>{{ phone }}</span></li>{% endif %}
-        </ul>
-    </section>
+    <div class="profile-body">
+
+        <!-- Coluna esquerda: avatar, nome, friends -->
+        <aside class="profile-sidebar">
+            <div class="profile-avatar">
+                {% if image %}
+                    <img src="{{ url_for('static', filename='uploads/' + image) }}" alt="Profile Image">
+                {% else %}
+                    <img src="{{ url_for('static', filename='uploads/default.png') }}" alt="Profile Image">
+                {% endif %}
+            </div>
+            {% if name %}<h2 class="profile-name">{{ name }}</h2>{% endif %}
+            <p class="profile-username">@{{ username }}</p>
+            <p class="profile-friends-count"><strong>{{ friends_count }}</strong> Friends</p>
+        </aside>
+
+        <!-- Coluna direita: about, contact, botão -->
+        <div class="profile-content">
+            <form action="/settings" method="GET">
+                <input type="submit" value="Change Profile" class="profile-edit-btn">
+            </form>
+
+            {% if description %}
+            <section class="profile-section">
+                <h3>About me</h3>
+                <p>{{ description }}</p>
+            </section>
+            {% endif %}
+
+            <section class="profile-section">
+                <h3>Contact</h3>
+                <ul class="info-list">
+                    {% if email %}<li>Email: {{ email }}</li>{% endif %}
+                    {% if phone %}<li>Phone: {{ phone }}</li>{% endif %}
+                </ul>
+            </section>
+        </div>
+
+    </div>
 
 </div>
 {% endblock %}

@@ -7,19 +7,18 @@
     <link rel="icon" href="{{ url_for('static', filename='icon/chat.ico') }}" type="image/ico">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
     <nav>
-        <span class="nav-logo">LittleTalk</span>
+        <a href="/" class="nav-logo">LittleTalk</a>
         <ul class="nav-links">
-            <li><a href="/">Homepage</a></li>
             {% if session["user_id"] %}
                 <li><a href="/profiles">Profiles</a></li>
-                <li><a href="/settings">Profile Settings</a></li>
-                <li><a href="/logout">Log out</a></li>
                 <li><a href="/friends">Friends</a></li>
                 <li><a href="/requests">Requests</a></li>
                 <li><a href="/requests_sent">Sent requests</a></li>
+                <li><a href="/logout">Log out</a></li>
             {% else %}
                 <li><a href="/login">Log in</a></li>
                 <li><a href="/register">Register</a></li>
