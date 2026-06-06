@@ -1,18 +1,31 @@
 {% extends "layout.html" %}
-{% block title %}
-    Homepage
-{% endblock %}
+{% block title %}Homepage{% endblock %}
+
 {% block content %}
-    <h1>Profile</h1>
-    {% if image %}
-        <img style="width: 200px; height: 200px;" src="{{ url_for('static', filename='uploads/' + image) }}" alt="Profile Image">
-    {% else %}
-        <img style="width: 200px; height: 200px;" src="{{ url_for('static', filename='uploads/default.png') }}" alt="Profile Image">
-    {% endif %}
-    <h2>Username: {{ username }}</h2>
-    <h1>Personal Information</h1>
-    <h2>Name: {{ name }}</h2>
-    <h2>Email: {{ email }}</h2>
-    <h2>Phone: {{ phone }}</h2>
-    <h3>Description: {{ description }}</h3>
+<div class="profile-page">
+
+    <section class="profile-header card">
+        <div class="profile-avatar">
+            {% if image %}
+                <img src="{{ url_for('static', filename='uploads/' + image) }}" alt="Profile Image">
+            {% else %}
+                <img src="{{ url_for('static', filename='uploads/default.png') }}" alt="Profile Image">
+            {% endif %}
+        </div>
+        <div class="profile-identity">
+            <h1>{{ username }}</h1>
+            {% if name %}<p class="profile-name">{{ name }}</p>{% endif %}
+            {% if description %}<p class="profile-desc">{{ description }}</p>{% endif %}
+        </div>
+    </section>
+
+    <section class="profile-info card">
+        <h2>Personal Information</h2>
+        <ul class="info-list">
+            {% if email %}<li><span class="info-label">Email</span><span>{{ email }}</span></li>{% endif %}
+            {% if phone %}<li><span class="info-label">Phone</span><span>{{ phone }}</span></li>{% endif %}
+        </ul>
+    </section>
+
+</div>
 {% endblock %}

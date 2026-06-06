@@ -1,35 +1,32 @@
 {% extends "layout.html" %}
-{% block title %}
-    Friend requests
-{% endblock %}
+{% block title %}Friend Requests{% endblock %}
+
 {% block content %}
+<div class="list-page">
     <h1>Friend Requests</h1>
-    <table>
-    	<thead>
-    		<tr>
-    			<th>User</th>
-    			<th>Date</th>
-    			<th>Accept</th>
-    			<th>Decline</th>
-    		</tr>
-    	</thead>
-    	<tbody>
-    		{% for request in requests %}
-    		<tr>
-    			<td>{{ request["sender_username"] }}</td>
-    			<td>{{ request["created_at"] }}</td>
-    			<td>
-    				<form action="/requests/accept_request/{{ request['id'] }}" method="POST">
-    					<input type="submit" value="Accept">
-    				</form>
-    			</td>
-    			<td>
-    				<form action="/requests/decline_request/{{ request['id'] }}" method="POST">
-    					<input type="submit" value="Decline">
-    				</form>
-    			</td>
-    		</tr>
-    		{% endfor %}
-    	</tbody>
-    </table>
+
+    {% if requests %}
+    <ul class="user-list">
+        {% for request in requests %}
+        <li class="user-list-item card">
+            <div class="request-info">
+                <span class="user-list-name">{{ request["sender_username"] }}</span>
+                <span class="request-date">{{ request["created_at"] }}</span>
+            </div>
+            <div class="user-list-actions">
+                <form action="/requests/accept_request/{{ request['id'] }}" method="POST">
+                    <button type="submit" class="btn btn-sm">Accept</button>
+                </form>
+                <form action="/requests/decline_request/{{ request['id'] }}" method="POST">
+                    <button type="submit" class="btn btn-sm btn-danger">Decline</button>
+                </form>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="empty-state">No pending requests.</p>
+    {% endif %}
+
+</div>
 {% endblock %}

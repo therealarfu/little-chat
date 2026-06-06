@@ -1,29 +1,28 @@
 {% extends "layout.html" %}
-{% block title %}
-    Friends
-{% endblock %}
+{% block title %}Friends{% endblock %}
+
 {% block content %}
+<div class="list-page">
     <h1>Friends</h1>
-    <ul>
-	    {% for friend in friends %}
-	    	<li>{{ friend["friend_username"] }}</li>
-	    	<ul>
-	    		<li>
-	    			<form action="/profile/{{ friend['friend_username'] }}" method="POST">
-	    				<input type="submit" value="See profile">
-	    			</form>
-	    		</li>
-	    		<li>
-				    <form action="" method="POST">
-						<input type="submit" value="Chat">
-					</form>
-	    		</li>
-	    		<li>
-	    			<form action="/friends/remove_friend/{{ friend['friend_username'] }}" method="POST">
-						<input type="submit" value="Remove friend">
-					</form>
-	    		</li>
-	    	</ul>
-	    {% endfor %} 	
+
+    {% if friends %}
+    <ul class="user-list">
+        {% for friend in friends %}
+        <li class="user-list-item card">
+            <span class="user-list-name">{{ friend["friend_username"] }}</span>
+            <div class="user-list-actions">
+                <a href="/profile/{{ friend['friend_username'] }}" class="btn btn-sm">Profile</a>
+                <button class="btn btn-sm" disabled>Chat</button>
+                <form action="/friends/remove_friend/{{ friend['friend_username'] }}" method="POST">
+                    <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                </form>
+            </div>
+        </li>
+        {% endfor %}
     </ul>
+    {% else %}
+    <p class="empty-state">You have no friends yet. <a href="/profiles">Find people to add!</a></p>
+    {% endif %}
+
+</div>
 {% endblock %}

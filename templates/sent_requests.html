@@ -1,25 +1,25 @@
 {% extends "layout.html" %}
-{% block title %}
-    Requests sents
-{% endblock %}
+{% block title %}Sent Requests{% endblock %}
+
 {% block content %}
-    <h1>Requests sents</h1>
-    <table>
-    	<thead>
-    		<tr>
-    			<th>User</th>
-    			<th>Date</th>
-                <th>Status</th>
-    		</tr>
-    	</thead>
-    	<tbody>
-    		{% for request in requests %}
-    		<tr>
-    			<td>{{ request["receiver_username"] }}</td>
-    			<td>{{ request["created_at"] }}</td>
-                <td>{{ request["status"] }}</td>
-    		</tr>
-    		{% endfor %}
-    	</tbody>
-    </table>
+<div class="list-page">
+    <h1>Sent Requests</h1>
+
+    {% if requests %}
+    <ul class="user-list">
+        {% for request in requests %}
+        <li class="user-list-item card">
+            <div class="request-info">
+                <span class="user-list-name">{{ request["receiver_username"] }}</span>
+                <span class="request-date">{{ request["created_at"] }}</span>
+            </div>
+            <span class="status-badge status-{{ request['status'] }}">{{ request["status"] }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="empty-state">You haven't sent any requests.</p>
+    {% endif %}
+
+</div>
 {% endblock %}

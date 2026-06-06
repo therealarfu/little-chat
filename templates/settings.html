@@ -1,46 +1,89 @@
 {% extends "layout.html" %}
-{% block title %}
-    Profile Settings
-{% endblock %}
+{% block title %}Profile Settings{% endblock %}
+
 {% block content %}
+<div class="settings-page">
     <h1>Profile Settings</h1>
-    <p>This is the profile settings page.</p>
-    <h2>Account settings</h2>
-    <form action="/settings/change_image" method="POST" enctype="multipart/form-data">
-        <label for="image">Profile Image:</label>
-        {% if image %}
-            <img style="width: 200px; height: 200px;" src="{{ url_for('static', filename='uploads/' + image) }}" alt="Profile Image">
-        {% else %}
-            <img style="width: 200px; height: 200px;" src="{{ url_for('static', filename='uploads/default.png') }}" alt="Profile Image">
-        {% endif %}
-        <input type="file" name="image" accept="image/*">
-        <input type="submit" value="Upload">
-    </form>
-    <form action="/settings/change_username" method="POST">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" value="{{ username }}" required><br><br>
-        <input type="submit" value="Change username">
-    </form>
-    <form action="/settings/remove_account" method="POST">
-        <input type="submit" value="Delete account">
-    </form>
-    <form action="/settings/change_password" method="POST">
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br><br>
-        <label for="newpass">New password:</label>
-        <input type="password" id="newpass" name="newpass" required><br><br>
-        <input type="submit" value="Change password">
-    </form>
-    <h2>Personal Information</h2>
-    <form action="/settings/change_info" method="POST">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" value="{{ name }}" required><br><br>
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" value="{{ email }}" required><br><br>
-        <label for="phone">Phone:</label>
-        <input type="text" id="phone" name="phone" value="{{ phone }}" required><br><br>
-        <label for="description">Description:</label>
-        <textarea id="description" name="description" rows="4" cols="50">{{ description }}</textarea><br><br>
-        <input type="submit" value="Update">
-    </form>
+
+    <!-- Avatar -->
+    <section class="card settings-section">
+        <h2>Profile Image</h2>
+        <div class="avatar-preview">
+            {% if image %}
+                <img src="{{ url_for('static', filename='uploads/' + image) }}" alt="Profile Image">
+            {% else %}
+                <img src="{{ url_for('static', filename='uploads/default.png') }}" alt="Profile Image">
+            {% endif %}
+        </div>
+        <form action="/settings/change_image" method="POST" enctype="multipart/form-data" class="settings-form">
+            <div class="form-group">
+                <label for="image">New image</label>
+                <input type="file" id="image" name="image" accept="image/*">
+            </div>
+            <button type="submit" class="btn">Upload</button>
+        </form>
+    </section>
+
+    <!-- Username -->
+    <section class="card settings-section">
+        <h2>Username</h2>
+        <form action="/settings/change_username" method="POST" class="settings-form">
+            <div class="form-group">
+                <label for="username">New username</label>
+                <input type="text" id="username" name="username" value="{{ username }}" required>
+            </div>
+            <button type="submit" class="btn">Change username</button>
+        </form>
+    </section>
+
+    <!-- Password -->
+    <section class="card settings-section">
+        <h2>Password</h2>
+        <form action="/settings/change_password" method="POST" class="settings-form">
+            <div class="form-group">
+                <label for="password">Current password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="newpass">New password</label>
+                <input type="password" id="newpass" name="newpass" required>
+            </div>
+            <button type="submit" class="btn">Change password</button>
+        </form>
+    </section>
+
+    <!-- Personal Info -->
+    <section class="card settings-section">
+        <h2>Personal Information</h2>
+        <form action="/settings/change_info" method="POST" class="settings-form">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" value="{{ name }}">
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" value="{{ email }}">
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="text" id="phone" name="phone" value="{{ phone }}">
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="4">{{ description }}</textarea>
+            </div>
+            <button type="submit" class="btn">Update info</button>
+        </form>
+    </section>
+
+    <!-- Danger Zone -->
+    <section class="card settings-section settings-danger">
+        <h2>Danger Zone</h2>
+        <p>This action is irreversible. Your account and all data will be permanently deleted.</p>
+        <form action="/settings/remove_account" method="POST">
+            <button type="submit" class="btn btn-danger">Delete account</button>
+        </form>
+    </section>
+
+</div>
 {% endblock %}

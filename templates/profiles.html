@@ -1,13 +1,17 @@
 {% extends "layout.html" %}
-{% block title %}
-    Profiles
-{% endblock %}
+{% block title %}Profiles{% endblock %}
+
 {% block content %}
+<div class="list-page">
     <h1>Profiles</h1>
-    <ul>
+
+    <ul class="user-list">
         {% for profile in profiles %}
-            <li>{{ profile["username"] }}</li>
-            <a href="/profile/{{ profile['username'] }}">See profile</a>
+        <li class="user-list-item card">
+            <span class="user-list-name">{{ profile["username"] }}</span>
+            <a href="/profile/{{ profile['username'] }}" class="btn btn-sm">See profile</a>
+        </li>
         {% endfor %}
     </ul>
+</div>
 {% endblock %}

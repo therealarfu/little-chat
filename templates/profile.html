@@ -1,27 +1,34 @@
 {% extends "layout.html" %}
-{% block title %}
-    {{ username }}'s Profile
-{% endblock %}
+{% block title %}{{ username }}'s Profile{% endblock %}
 
 {% block content %}
-    <h1>{{ username }}</h1>
+<div class="profile-page">
 
-    <h2>Personal info</h2>
-    <ul>
-        {% if image %}
-            <img style="width: 200px; height: 200px;" src="{{ url_for('static', filename='uploads/' + image) }}" alt="Profile Image">
-        {% else %}
-            <img style="width: 200px; height: 200px;" src="{{ url_for('static', filename='uploads/default.png') }}" alt="Profile Image">
-        {% endif %}
+    <section class="profile-header card">
+        <div class="profile-avatar">
+            {% if image %}
+                <img src="{{ url_for('static', filename='uploads/' + image) }}" alt="Profile Image">
+            {% else %}
+                <img src="{{ url_for('static', filename='uploads/default.png') }}" alt="Profile Image">
+            {% endif %}
+        </div>
+        <div class="profile-identity">
+            <h1>{{ username }}</h1>
+            {% if name %}<p class="profile-name">{{ name }}</p>{% endif %}
+            {% if desc %}<p class="profile-desc">{{ desc }}</p>{% endif %}
+        </div>
+        <form action="/send_request/{{ username }}" method="POST">
+            <button type="submit" class="btn">Add friend</button>
+        </form>
+    </section>
 
-        <li>Name: {{ name }}</li>
-        <li>Email: {{ email }}</li>
-        <li>Phonenumber: {{ phone }}</li>
-        <li>Description: {{ desc }}</li>
-    </ul>
+    <section class="profile-info card">
+        <h2>Personal Information</h2>
+        <ul class="info-list">
+            {% if email %}<li><span class="info-label">Email: </span><span>{{ email }}</span></li>{% endif %}
+            {% if phone %}<li><span class="info-label">Phone: </span><span>{{ phone }}</span></li>{% endif %}
+        </ul>
+    </section>
 
-    <form action="/send_request/{{ username }}" method="POST">
-        <input type="submit" value="Add friend">
-    </form>
-    
+</div>
 {% endblock %}

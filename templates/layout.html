@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
+    <link rel="icon" href="{{ url_for('static', filename='icon/chat.ico') }}" type="image/ico">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
 </head>
 <body>
     <nav>
-        <ul>
+        <span class="nav-logo">LittleTalk</span>
+        <ul class="nav-links">
             <li><a href="/">Homepage</a></li>
             {% if session["user_id"] %}
                 <li><a href="/profiles">Profiles</a></li>
@@ -22,6 +26,11 @@
             {% endif %}
         </ul>
     </nav>
-    {% block content %}{% endblock %}
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>Arthur Torres • 2026</p>
+    </footer>
 </body>
 </html>

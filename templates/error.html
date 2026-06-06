@@ -1,9 +1,13 @@
 {% extends "layout.html" %}
-{% block title %}
-    Error
-{% endblock %}
+{% block title %}Error{% endblock %}
+
 {% block content %}
-    <h1>Error</h1>
-    <p>{{ top }}</p>
-    <p>{{ bottom }}</p>
+<div class="page-center">
+    <div class="card error-card">
+        <span class="error-code">{{ top }}</span>
+        <h1>Something went wrong</h1>
+        <p class="error-message">{{ bottom }}</p>
+        <a href="/" class="btn">Go back home</a>
+    </div>
+</div>
 {% endblock %}
